@@ -1,0 +1,18 @@
+services: 
+  caddy: 
+    image: caddy:latest
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes: 
+  caddy_data:
+  caddy_config:
+
+networks:
+  chat_app:
+    driver: bridge
