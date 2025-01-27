@@ -1,7 +1,7 @@
 chat.kemaru.me {
-	reverse_proxy frontend:3000;
+	reverse_proxy frontend:3000
 }
 
 core.kemaru.me {
-	reverse_proxy backend:4000;
+	reverse_proxy backend:4000
 }

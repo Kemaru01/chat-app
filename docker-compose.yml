@@ -1,6 +1,7 @@
 services: 
   caddy: 
     image: caddy:latest
+    container_name: "caddy-server"
     ports:
       - "443:443"
       - "80:80"
@@ -8,6 +9,21 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
+    networks:
+      - chat_app
+
+  frontend:
+    image: oven/bun:alpine
+    container_name: "chat-app-frontend"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/www/app:rw
+    working_dir: /www/app
+    command: ["bun", "dev"] # Development
+    networks:
+      - chat_app
+
 
 volumes: 
   caddy_data:
