@@ -1,7 +1,52 @@
 "use client";
+
+import axios from "axios";
+import classNames from "classnames";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { RiLoader3Fill } from "react-icons/ri";
 
 export default function Register() {
+  const [email, setEmail] = useState(""),
+    [password, setPassword] = useState(""),
+    [username, setUsername] = useState("")
+
+  const [error, setError] = useState<object | null>(null),
+    [isLoading, setLoading] = useState<boolean>(false)
+
+  const router = useRouter()
+
+  const onRegister = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    setLoading(true)
+
+    setTimeout(() => {
+      axios.post<{ error: object, token: string }>("https://core.kemaru.me/auth/register", {
+        username,
+        email,
+        password
+      })
+        .then(({ data: { error, token } }) => {
+          if (error) {
+            setError(error)
+            setLoading(false)
+            return
+          }
+
+          localStorage.setItem("token", token)
+          router.push("/")
+        })
+        .catch(() => {
+          alert("Sunucuya bağlanılamıyo!")
+          setLoading(false)
+        })
+    }, 1000)
+
+  }
+
+
   return (
     <>
       <a href="#" className="flex items-center mb-8">
@@ -11,7 +56,7 @@ export default function Register() {
         />
         <span className="dark:text-white font-bold text-5xl ml-3">Chat</span>
       </a>
-      <div 
+      <div
         className="
           flex flex-col 
           w-full max-w-sm
@@ -21,35 +66,56 @@ export default function Register() {
           rounded-lg
         "
       >
+        {
+          isLoading ? (
+            <>
+              <div
+                className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center"
+                style={{ backgroundColor: "rgba(0,0,0,0.4)" }}>
+                <RiLoader3Fill color="white" className="animate-spin text-6xl" />
+              </div>
+            </>
+          ) : null
+        }
+
         <h1 className="text-3xl font-bold mb-8">Bir hesap oluştur</h1>
-        <form className="flex flex-col" action="#">
+        <form className="flex flex-col" onSubmit={onRegister}>
           <label className="flex flex-col mb-2">
             <span className="text-md mb-1 font-bold">Kullanıcı adı</span>
             <input
               type="text"
-              placeholder="örn: kerem_s2ci"
+              placeholder="Örnek: kerem_s2ci"
+              required
+              onChange={(e) => setUsername(e.target.value)}
               className="outline-none border dark:border-gray-600 rounded px-3.5 py-2 dark:bg-gray-700 focus:dark:border-gray-400"
             />
           </label>
           <label className="flex flex-col mb-2">
             <span className="text-md mb-1 font-bold">E-posta</span>
             <input
-              type="text"
+              type="email"
               placeholder="isim@email"
+              required
+              onChange={(e) => setEmail(e.target.value)}
               className="outline-none border dark:border-gray-600 rounded px-3.5 py-2 dark:bg-gray-700 focus:dark:border-gray-400"
             />
           </label>
           <label className="flex flex-col mb-6">
             <span className="text-md mb-1 font-bold">Şifre</span>
             <input
-              type="text"
+              type="password"
+              placeholder="Şifre"
+              required
+              onChange={(e) => setPassword(e.target.value)}
               className="outline-none border dark:border-gray-600 rounded px-3.5 py-2 dark:bg-gray-700 focus:dark:border-gray-400"
             />
           </label>
 
-          <button className="bg-primary-700 py-3 font-bold rounded ring-0 border-2 border-primary-700 hover:border-primary-500">
-            <span>Kayıt ol</span>
-          </button>
+          <button type="submit" disabled={isLoading} className={
+            classNames("bg-primary-700 py-3 font-bold rounded ring-0 border-1 border-primary-700 hover:border-primary-500", {
+              "bg-gray-600 border-gray-300": isLoading
+            })
+          }>Kayıt ol</button>
         </form>
         <div className="flex justify-between mt-4">
           <span>
