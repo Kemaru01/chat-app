@@ -1,10 +1,10 @@
-export default function AuthLayout({
+export default function MainLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <main className="h-full bg-black">
+    <main className="h-full">
       {children}
     </main>
   );
